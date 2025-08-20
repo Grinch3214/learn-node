@@ -1,26 +1,45 @@
 import fs from 'fs';
 import { EventEmitter } from 'events';
 
-const fileEmmiter = new EventEmitter();
+const fileEmitter = new EventEmitter();
 
-fileEmmiter.on('writeComplete', () => {
+const PATH = './first.txt';
+const RENAMED_PATH = './renamed-first.txt';
+
+function handleWriteComplete() {
   console.log('File first.txt was written');
-  fs.appendFile('./first.txt', '\nOne more line', () => {
-    fileEmmiter.emit('appendComplete');
-  });
-});
+  appendToFile();
+}
 
-fileEmmiter.on('appendComplete', () => {
+function handleAppendComplete() {
   console.log('Append text to the first.txt file');
-  fs.rename('./first.txt', './renamed-first.txt', () => {
-    fileEmmiter.emit('renameComplete');
-  });
-});
+  renameFile();
+}
 
-fileEmmiter.on('renameComplete', () => {
+function handleRenameComplete() {
   console.log('File was renamed');
-});
+}
 
-fs.writeFile('./first.txt', 'First file text test', () => {
-  fileEmmiter.emit('writeComplete');
-});
+function writeFile() {
+  fs.writeFile(PATH, 'First file text test', () => {
+    fileEmitter.emit('writeComplete');
+  });
+}
+
+function appendToFile() {
+  fs.appendFile(PATH, '\nOne more line', () => {
+    fileEmitter.emit('appendComplete');
+  });
+}
+
+function renameFile() {
+  fs.rename(PATH, RENAMED_PATH, () => {
+    fileEmitter.emit('renameComplete');
+  });
+}
+
+fileEmitter.on('writeComplete', handleWriteComplete);
+fileEmitter.on('appendComplete', handleAppendComplete);
+fileEmitter.on('renameComplete', handleRenameComplete);
+
+writeFile();
