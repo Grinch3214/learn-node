@@ -1,45 +1,33 @@
+// stream file
+import http from 'http';
 import fs from 'fs';
-import { EventEmitter } from 'events';
 
-const fileEmitter = new EventEmitter();
+const PORT = 5000;
 
-const PATH = './first.txt';
-const RENAMED_PATH = './renamed-first.txt';
+const server = http.createServer((req, res) => {
+  const filePath = './files/index.html';
+  // streams
+  if (req.url === '/' && req.method === 'GET') {
+    const readStream = fs.createReadStream(filePath);
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'text/html');
+    readStream.pipe(res);
+  }
+  // no streams
+  if (req.url === '/no-stream' && req.method === 'GET') {
+    fs.readFile(filePath, (err, data) => {
+      if (err) {
+        res.statusCode = 500;
+        res.end('Error reading file on server');
+      } else {
+        res.statusCode = 200;
+        res.setHeader('Content-Type', 'text/html');
+        res.end(data);
+      }
+    });
+  }
+});
 
-function handleWriteComplete() {
-  console.log('File first.txt was written');
-  appendToFile();
-}
-
-function handleAppendComplete() {
-  console.log('Append text to the first.txt file');
-  renameFile();
-}
-
-function handleRenameComplete() {
-  console.log('File was renamed');
-}
-
-function writeFile() {
-  fs.writeFile(PATH, 'First file text test', () => {
-    fileEmitter.emit('writeComplete');
-  });
-}
-
-function appendToFile() {
-  fs.appendFile(PATH, '\nOne more line', () => {
-    fileEmitter.emit('appendComplete');
-  });
-}
-
-function renameFile() {
-  fs.rename(PATH, RENAMED_PATH, () => {
-    fileEmitter.emit('renameComplete');
-  });
-}
-
-fileEmitter.on('writeComplete', handleWriteComplete);
-fileEmitter.on('appendComplete', handleAppendComplete);
-fileEmitter.on('renameComplete', handleRenameComplete);
-
-writeFile();
+server.listen(PORT, () => {
+  console.log(`Server is listening at port ${PORT}`);
+});
