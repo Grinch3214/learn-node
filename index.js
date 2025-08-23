@@ -1,23 +1,15 @@
 import express from 'express';
+import commentsRouter from './routes/comments.js';
 
 const app = express();
 
 const PORT = 5000;
 
-function getRoothandler(req, res) {
-  res.send('getRoothandler');
+function getRootHandler(req, res) {
+  res.send('getRootHandler');
 }
 
-function getCommentsHandler(req, res) {
-  res.send('getCommentsHandler');
-}
-
-function postCommentsHandler(req, res) {
-  res.send('postCommentsHandler');
-}
-
-app.get('/', getRoothandler);
-app.get('/comments', getCommentsHandler);
-app.post('/comments', postCommentsHandler);
+app.get('/', getRootHandler);
+app.use('/comments', commentsRouter);
 
 app.listen(PORT, () => console.log(`Started server on port ${PORT}`));
