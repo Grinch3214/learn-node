@@ -1,6 +1,8 @@
 <template>
-  <div v-if="result.lenght">
-    {{ result }}
+  <div v-if="result.length">
+    <div v-for="res in result">
+      {{ res }}
+    </div>
   </div>
 </template>
 
@@ -8,6 +10,7 @@
 import { ref, onMounted } from 'vue';
 
 const result = ref([]);
+
 async function getData() {
   const url = 'http://127.0.0.1:5000';
   try {
@@ -17,7 +20,6 @@ async function getData() {
     }
 
     const result = await response.json();
-    console.log(result);
     return result;
   } catch (error) {
     console.error(error.message);
@@ -25,6 +27,6 @@ async function getData() {
 }
 
 onMounted(async () => {
-  await getData();
+  result.value = await getData();
 });
 </script>
