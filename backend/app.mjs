@@ -10,8 +10,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use((req, res) => {
+  const personData = [
+    {
+      name: 'Max',
+      isAdmin: true,
+    },
+  ];
   console.log(req.body);
-  return res.send('Server Ok');
+  return res.json(personData);
 });
 
 app.listen(PORT, () => console.log(`Started server on port ${PORT}`));
