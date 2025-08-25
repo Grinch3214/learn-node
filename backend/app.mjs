@@ -5,10 +5,9 @@ const PORT = 5000;
 
 const app = express();
 
-// middleware funcs
 app.use(morgan('tiny'));
 app.use(express.json());
-app.use(express.urlencoded({ extended: true })); // for query (forms)
+app.use(express.urlencoded({ extended: true }));
 
 app.use((req, res) => {
   console.log(req.body);
